@@ -1,41 +1,59 @@
 package com.petshop.petshop.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.petshop.petshop.DTO.ApiResponseDTO;
+import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
+import com.petshop.petshop.response.ApiResponseBuilder;
 import com.petshop.petshop.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.petshop.petshop.repository.CategoryRepository;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/api/categories")
+@CrossOrigin(origins = "http://localhost:4200")
 public class CategoryController {
+
 
     @Autowired
     private CategoryService categoryService;
 
     @GetMapping()
-    public ResponseEntity<List<Category>> all(){
-        return ResponseEntity.ok().body(categoryService.getAllCategory());
+    public ResponseEntity<ApiResponseDTO<List<Category>>> getAll(){
+        return ResponseEntity.ok(categoryService.getAllCategory());
     }
 
     @PostMapping()
-    public ResponseEntity<Category> newCategory(@RequestBody Category newCategory){
+    public ResponseEntity<ApiResponseDTO<Category>> newCategory(
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam("categoryData") String categoryDataJson) throws IOException {
 
-        return ResponseEntity.ok().body(categoryService.createCategory(newCategory));
+        ObjectMapper mapper = new ObjectMapper();
+        Category newCategory = mapper.readValue(categoryDataJson, Category.class);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(newCategory, image));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Optional<Category>> findById(@PathVariable String id){
-        return ResponseEntity.ok().body(categoryService.getCategory(id));
+    @GetMapping("/{name}")
+    public ResponseEntity<ApiResponseDTO<Category>> findByName(@PathVariable String name){
+        return ResponseEntity.ok().body(categoryService.getCategory(name));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Optional<Category>> replaceCategory(@RequestBody Category updateCategory, @PathVariable String id) {
-        return ResponseEntity.ok().body(categoryService.updateCategory(id, updateCategory));
+    public ResponseEntity<ApiResponseDTO<Category>> replaceCategory(
+            @PathVariable String id,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam("categoryData") String categoryDataJson) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        Category updateCategory = mapper.readValue(categoryDataJson, Category.class);
+
+        return ResponseEntity.ok(categoryService.updateCategory(id, updateCategory, image));
     }
 
     @DeleteMapping("/{id}")

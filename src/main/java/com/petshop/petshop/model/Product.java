@@ -1,6 +1,7 @@
 package com.petshop.petshop.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -18,18 +19,21 @@ public class Product {
     private String id;
 
     @NotBlank(message = "O nome do produto é obrigatório")
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @NotNull(message = "Unit price is required")
-    @Positive(message = "O preço deve ser maior que zero")
+    @Min(value = 0, message = "O preço unitário deve ser maior ou igual a 0")
     @Column(name = "unitPrice")
     private BigDecimal unitPrice;
 
     @NotNull(message = "Units in stock is required")
-    @Positive(message = "O estoque deve ser maior que zero")
+    @Min(value = 0, message = "A quantidade em estoque deve ser maior ou igual a 0")
     @Column(name = "unitsInStock")
     private int unitsInStock;
+
+    @Column(name = "imageUrl")
+    private String imageUrl;
 
     @ManyToMany
     @JoinTable(
@@ -41,6 +45,14 @@ public class Product {
 
     public Set<Category> getCategories() {
         return categories;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setCategories(Set<Category> categories) {
@@ -78,4 +90,5 @@ public class Product {
     public void setUnitsInStock(int unitsInStock) {
         this.unitsInStock = unitsInStock;
     }
+
 }

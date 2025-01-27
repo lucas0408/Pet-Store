@@ -1,6 +1,8 @@
 package com.petshop.petshop.exception;
 
 import com.petshop.petshop.DTO.ApiResponseDTO;
+import com.petshop.petshop.response.ApiResponseBuilder;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +23,7 @@ public class GlobalExceptionHandler {
   @Autowired
   private ApiResponseBuilder<Object> responseBuilder;
 
+  //lida com erros de validação de campo ex: @NotNull, @Size, Etc.
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiResponseDTO<Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
     List<String> errors = ex.getBindingResult()
@@ -33,6 +37,7 @@ public class GlobalExceptionHandler {
             .body(responseBuilder.createErrorResponse("Validation failed", errors));
   }
 
+  //lida com erros de JSON mal formatado
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ApiResponseDTO<Object>> handleJsonErrors(HttpMessageNotReadableException ex) {
     return ResponseEntity
@@ -43,6 +48,7 @@ public class GlobalExceptionHandler {
             ));
   }
 
+  //lida com erro de tipo em parametro URL, Ex: quando se espera um número mas recebe uma string.
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<ApiResponseDTO<Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
     String error = String.format("Parameter '%s' should be of type %s",
@@ -53,6 +59,7 @@ public class GlobalExceptionHandler {
             .body(responseBuilder.createErrorResponse("Invalid parameter type", Collections.singletonList(error)));
   }
 
+  //lida com erro de recursos não encontrados
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ApiResponseDTO<Object>> handleResourceNotFound(ResourceNotFoundException ex) {
     return ResponseEntity
@@ -63,6 +70,28 @@ public class GlobalExceptionHandler {
             ));
   }
 
+  //lida com erros de validação personalizado
+  @ExceptionHandler(ValidationException.class)
+  public ResponseEntity<ApiResponseDTO<Object>> handleValidationException(ValidationException ex) {
+    return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(responseBuilder.createErrorResponse(
+                    "Validation failed",
+                    Collections.singletonList(ex.getMessage())
+            ));
+  }
+
+  //lida com erro de IOException, quando algum sinal de entrada/saída falha ou é interrompido
+  @ExceptionHandler(IOException.class)
+  public ResponseEntity<ApiResponseDTO<Object>> handleIOIOException(IOException ex) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(responseBuilder.createErrorResponse(
+                    "Error to upload image",
+                    Collections.singletonList(ex.getMessage())
+            ));
+  }
+
+  //lida com erro de RuntimeException genérica
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<ApiResponseDTO<Object>> handleRuntime(RuntimeException ex) {
     return ResponseEntity
@@ -73,6 +102,7 @@ public class GlobalExceptionHandler {
             ));
   }
 
+  //lida com erro de Exception genérica
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResponseDTO<Object>> handleGeneric(Exception ex) {
     return ResponseEntity

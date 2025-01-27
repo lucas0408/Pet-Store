@@ -20,6 +20,8 @@ public class Category {
     @Column(name = "name", unique = true)
     private String name;
 
+    @Column(name = "imageUrl")
+    private String imageUrl;
 
     public String getId() {
         return id;
@@ -35,5 +37,22 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
     }
 }

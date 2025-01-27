@@ -1,89 +1,74 @@
 package com.petshop.petshop.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.petshop.DTO.ApiResponseDTO;
-import com.petshop.petshop.DTO.ProductRequestDTO;
-import com.petshop.petshop.exception.ApiResponseBuilder;
-import com.petshop.petshop.exception.ResourceNotFoundException;
-import com.petshop.petshop.exception.ResponseMessageProvider;
+import com.petshop.petshop.response.ApiResponseBuilder;
 import com.petshop.petshop.model.Product;
 import com.petshop.petshop.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.petshop.petshop.repository.ProductRepository;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/api/products")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProductController {
 
-    private final ProductService productService;
-    private final ApiResponseBuilder<List<Product>> listResponseBuilder;
-    private final ApiResponseBuilder<Product> responseBuilder;
-    private final ResponseMessageProvider messageProvider;
+    @Autowired
+    private ProductService productService;
 
     @Autowired
-    public ProductController(
-            ProductService productService,
-            ApiResponseBuilder<Product> responseBuilder,
-            ApiResponseBuilder<List<Product>> listResponseBuilder,
-            ResponseMessageProvider messageProvider
-    ) {
-        this.productService = productService;
-        this.responseBuilder = responseBuilder;
-        this.listResponseBuilder = listResponseBuilder;
-        this.messageProvider = messageProvider;
-    }
+    private ApiResponseBuilder<List<Product>> listResponseBuilder;
+
+    @Autowired
+    private ApiResponseBuilder<Product> responseBuilder;
+
 
     @GetMapping()
     public ResponseEntity<ApiResponseDTO<List<Product>>> getAll(){
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(listResponseBuilder.createSuccessResponse(
-                products,
-                messageProvider.getSuccessListMessage()
-        ));
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
-    @PostMapping()
-    public ResponseEntity<ApiResponseDTO<Product>> newProduct(@Valid @RequestBody ProductRequestDTO newProduct){
-        Product created = productService.createProduct(newProduct);
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<ApiResponseDTO<Product>> newProduct(
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam("productData") String productDataJson) throws IOException {
+
+        System.out.println(productDataJson);
+        ObjectMapper mapper = new ObjectMapper();
+        Product newProduct = mapper.readValue(productDataJson, Product.class);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseBuilder.createSuccessResponse(
-                        created,
-                        messageProvider.getSuccessCreateMessage()
-                ));
+                .body(productService.createProduct(newProduct, image));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<Product>> getById(@Valid @PathVariable String id){
-        Product product = productService.getProduct(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-        return ResponseEntity.ok(responseBuilder.createSuccessResponse(
-                product,
-                messageProvider.getSuccessRetrieveMessage()
-        ));
+        return ResponseEntity.ok(productService.getProduct(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponseDTO<Product>> replaceProduct(@Valid @RequestBody ProductRequestDTO updateProduct, @PathVariable String id) {
-        Product updated = productService.updateProduct(id, updateProduct)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-        return ResponseEntity.ok(responseBuilder.createSuccessResponse(
-                updated,
-                messageProvider.getSuccessUpdateMessage()
-        ));
+    public ResponseEntity<ApiResponseDTO<Product>> replaceProduct(
+            @PathVariable String id,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam("productData") String productDataJson) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        Product updateProduct = mapper.readValue(productDataJson, Product.class);
+
+        return ResponseEntity.ok(productService.updateProduct(id, updateProduct, image));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
-        return ResponseEntity.ok(responseBuilder.createSuccessResponse(
-                null,
-                messageProvider.getSuccessDeleteMessage()
-        ));
+        return ResponseEntity.ok().build();
     }
 }
