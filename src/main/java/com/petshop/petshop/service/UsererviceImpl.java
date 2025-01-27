@@ -1,7 +1,10 @@
 package com.petshop.petshop.service;
 
+import com.petshop.petshop.DTO.ApiResponseDTO;
+import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.User;
 import com.petshop.petshop.repository.UserRepository;
+import com.petshop.petshop.response.ApiResponseBuilder;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,21 +17,28 @@ import java.util.Optional;
 public class UsererviceImpl implements UserService{
 
     @Autowired
+    private ApiResponseBuilder<List<User>> listResponseBuilder;
+
+    @Autowired
+    private ApiResponseBuilder<User> responseBuilder;
+
+    @Autowired
     UserRepository userRepository;
 
 
     @Override
-    public List<User> getAllUsers() {
-        return this.userRepository.findAll();
+    public ApiResponseDTO<List<User>> getAllUsers() {
+        return listResponseBuilder.createSuccessResponse(this.userRepository.findAll());
     }
 
     @Override
-    public Optional<User> getUser(String id) {
-        return this.userRepository.findById(id);
+    public ApiResponseDTO<User> getUser(String id) {
+        return responseBuilder.createSuccessResponse(this.userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id)));
     }
 
     @Override
-    public User createUser(User requestNewUser) {
+    public ApiResponseDTO<User> createUser(User requestNewUser) {
         if(this.userRepository.findByLogin(requestNewUser.getLogin()) != null) {
             throw new ValidationException("Email já cadastrado");
         };
@@ -37,17 +47,17 @@ public class UsererviceImpl implements UserService{
 
         User newUser = new User(requestNewUser.getLogin(), encryptedPassword, requestNewUser.getRole());
 
-        return this.userRepository.save(newUser);
+        return responseBuilder.createSuccessResponse(this.userRepository.save(newUser));
     }
 
     @Override
-    public Optional<User> updateUser(String id, User updateUser) {
-        return this.userRepository.findById(id).map(user ->{
+    public ApiResponseDTO<User> updateUser(String id, User updateUser) {
+        return responseBuilder.createSuccessResponse(this.userRepository.findById(id).map(user ->{
                 user.setLogin(updateUser.getLogin());
                 user.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword()));
                 user.setRole(updateUser.getRole());
             return userRepository.save(user);
-        });
+        }).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id)));
     }
 
     @Override

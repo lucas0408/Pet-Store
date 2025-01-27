@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(responseBuilder.createErrorResponse("Validation failed", errors));
+            .body(responseBuilder.createErrorResponse(errors));
   }
 
   //lida com erros de JSON mal formatado
@@ -43,7 +43,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(responseBuilder.createErrorResponse(
-                    "Invalid request format",
                     Collections.singletonList("The request body is invalid or malformed")
             ));
   }
@@ -56,7 +55,7 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(responseBuilder.createErrorResponse("Invalid parameter type", Collections.singletonList(error)));
+            .body(responseBuilder.createErrorResponse(Collections.singletonList(error)));
   }
 
   //lida com erro de recursos não encontrados
@@ -65,7 +64,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(responseBuilder.createErrorResponse(
-                    "Resource not found",
                     Collections.singletonList(ex.getMessage())
             ));
   }
@@ -76,7 +74,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(responseBuilder.createErrorResponse(
-                    "Validation failed",
                     Collections.singletonList(ex.getMessage())
             ));
   }
@@ -86,7 +83,6 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ApiResponseDTO<Object>> handleIOIOException(IOException ex) {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(responseBuilder.createErrorResponse(
-                    "Error to upload image",
                     Collections.singletonList(ex.getMessage())
             ));
   }
@@ -97,7 +93,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(responseBuilder.createErrorResponse(
-                    "Processing error",
                     Collections.singletonList(ex.getMessage())
             ));
   }
@@ -108,7 +103,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(responseBuilder.createErrorResponse(
-                    "Internal server error",
                     Collections.singletonList("An unexpected error occurred")
             ));
   }

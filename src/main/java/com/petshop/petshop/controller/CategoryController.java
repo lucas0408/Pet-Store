@@ -2,9 +2,7 @@ package com.petshop.petshop.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.petshop.DTO.ApiResponseDTO;
-import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
-import com.petshop.petshop.response.ApiResponseBuilder;
 import com.petshop.petshop.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,6 @@ import java.util.List;
 @RequestMapping("/api/categories")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CategoryController {
-
 
     @Autowired
     private CategoryService categoryService;
