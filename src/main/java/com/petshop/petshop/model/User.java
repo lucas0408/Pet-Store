@@ -23,17 +23,17 @@ public class User implements UserDetails {
     @Column(name = "name")
     private String name;
 
-    @NotBlank(message = "O email do usuario é obrigatório")
-    @Size(max = 70, message = "O email não pode ter no máximo 70 caracteres")
-    @Column(name = "login")
-    private String login;
-
     @NotBlank(message = "A senha é obrigatória")
     @Column(name = "password")
     private String password;
 
     @NotBlank(message = "A permissão é obrigatória")
     private String role;
+
+    @NotBlank(message = "O email do usuario é obrigatório")
+    @Size(max = 70, message = "O email não pode ter no máximo 70 caracteres")
+    @Column(name = "login")
+    private String login;
 
     public User() {
     }
@@ -106,5 +106,16 @@ public class User implements UserDetails {
 
     public void setRole(String roles) {
         this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                '}';
     }
 }

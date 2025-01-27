@@ -1,6 +1,7 @@
 package com.petshop.petshop.service;
 
 import com.petshop.petshop.DTO.ApiResponseDTO;
+import com.petshop.petshop.DTO.UserDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.User;
 import com.petshop.petshop.repository.UserRepository;
@@ -38,14 +39,14 @@ public class UsererviceImpl implements UserService{
     }
 
     @Override
-    public ApiResponseDTO<User> createUser(User requestNewUser) {
-        if(this.userRepository.findByLogin(requestNewUser.getLogin()) != null) {
+    public ApiResponseDTO<User> createUser(UserDTO requestNewUser) {
+        if(this.userRepository.findByLogin(requestNewUser.login()) != null) {
             throw new ValidationException("Email já cadastrado");
         };
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(requestNewUser.getPassword());
+        String encryptedPassword = new BCryptPasswordEncoder().encode(requestNewUser.password());
 
-        User newUser = new User(requestNewUser.getLogin(), encryptedPassword, requestNewUser.getRole());
+        User newUser = new User(requestNewUser.login(), encryptedPassword, requestNewUser.role());
 
         return responseBuilder.createSuccessResponse(this.userRepository.save(newUser));
     }

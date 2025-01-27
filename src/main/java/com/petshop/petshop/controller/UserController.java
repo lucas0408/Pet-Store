@@ -1,6 +1,7 @@
 package com.petshop.petshop.controller;
 
 import com.petshop.petshop.DTO.ApiResponseDTO;
+import com.petshop.petshop.DTO.UserDTO;
 import com.petshop.petshop.model.User;
 import com.petshop.petshop.service.UserService;
 import jakarta.validation.Valid;
@@ -24,13 +25,16 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<ApiResponseDTO<User>> newUser(@RequestBody @Valid User requestNewUser){
+    public ResponseEntity<ApiResponseDTO<User>> newUser(@RequestBody @Valid UserDTO requestNewUser){
+        System.out.println(requestNewUser.login());
         return ResponseEntity.ok(this.userService.createUser(requestNewUser));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<User>> replaceUser(@PathVariable String id,
                                                                       @RequestBody @Valid User requestUpdateUser){
+
+        System.out.println(requestUpdateUser.getLogin());
         return ResponseEntity.ok(this.userService.updateUser(id, requestUpdateUser));
     }
 
