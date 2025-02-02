@@ -24,6 +24,9 @@ public class TokenService {
             String token = JWT.create()
                     .withIssuer("petshop")
                     .withSubject(user.getLogin())
+                    .withClaim("roles", user.getAuthorities().stream()
+                            .map(authority -> authority.getAuthority())
+                            .toList())
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
             return token;

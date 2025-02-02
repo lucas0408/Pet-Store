@@ -2,6 +2,7 @@ package com.petshop.petshop.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.petshop.DTO.ApiResponseDTO;
+import com.petshop.petshop.DTO.CategoryDTO;
 import com.petshop.petshop.model.Category;
 import com.petshop.petshop.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,10 @@ public class CategoryController {
             @RequestParam("categoryData") String categoryDataJson) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
-        Category newCategory = mapper.readValue(categoryDataJson, Category.class);
+        CategoryDTO newCategory = mapper.readValue(categoryDataJson, CategoryDTO.class);
+        newCategory.setImage(image);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(newCategory, image));
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(newCategory));
     }
 
     @GetMapping("/{name}")
@@ -48,9 +50,10 @@ public class CategoryController {
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam("categoryData") String categoryDataJson) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        Category updateCategory = mapper.readValue(categoryDataJson, Category.class);
+        CategoryDTO updateCategory = mapper.readValue(categoryDataJson, CategoryDTO.class);
+        updateCategory.setImage(image);
 
-        return ResponseEntity.ok(categoryService.updateCategory(id, updateCategory, image));
+        return ResponseEntity.ok(categoryService.updateCategory(id, updateCategory));
     }
 
     @DeleteMapping("/{id}")

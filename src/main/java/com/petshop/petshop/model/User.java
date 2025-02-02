@@ -38,10 +38,19 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String login, String password, String role){
+    public User(String name, String login, String role, String password) {
+        this.name = name;
         this.login = login;
-        this.password = password;
         this.role = role;
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getId() {
@@ -62,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role.equals("ADMIN")) return List.of(
+        if(this.role.equals("admin")) return List.of(
                 new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
@@ -104,7 +113,7 @@ public class User implements UserDetails {
         return role;
     }
 
-    public void setRole(String roles) {
+    public void setRole(String role) {
         this.role = role;
     }
 

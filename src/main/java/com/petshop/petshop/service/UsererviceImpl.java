@@ -10,6 +10,7 @@ import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,17 +29,20 @@ public class UsererviceImpl implements UserService{
 
 
     @Override
+    @Transactional(readOnly = true)
     public ApiResponseDTO<List<User>> getAllUsers() {
         return listResponseBuilder.createSuccessResponse(this.userRepository.findAll());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ApiResponseDTO<User> getUser(String id) {
         return responseBuilder.createSuccessResponse(this.userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id)));
     }
 
     @Override
+    @Transactional(readOnly = false)
     public ApiResponseDTO<User> createUser(UserDTO requestNewUser) {
         if(this.userRepository.findByLogin(requestNewUser.login()) != null) {
             throw new ValidationException("Email já cadastrado");
@@ -46,22 +50,29 @@ public class UsererviceImpl implements UserService{
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(requestNewUser.password());
 
-        User newUser = new User(requestNewUser.login(), encryptedPassword, requestNewUser.role());
+        User newUser = new User(requestNewUser.name(), requestNewUser.login(), requestNewUser.role(), encryptedPassword);
+
+        System.out.println(newUser);
 
         return responseBuilder.createSuccessResponse(this.userRepository.save(newUser));
     }
 
     @Override
-    public ApiResponseDTO<User> updateUser(String id, User updateUser) {
+    @Transactional(readOnly = false)
+    public ApiResponseDTO<User> updateUser(String id, UserDTO updateUser) {
         return responseBuilder.createSuccessResponse(this.userRepository.findById(id).map(user ->{
-                user.setLogin(updateUser.getLogin());
-                user.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword()));
-                user.setRole(updateUser.getRole());
+            user.setName(updateUser.name());
+                user.setLogin(updateUser.login());
+                if(!updateUser.password().equals("any")){
+                    user.setPassword(new BCryptPasswordEncoder().encode(updateUser.password()));
+                }
+                user.setRole(updateUser.role());
             return userRepository.save(user);
         }).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id)));
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void deleteUser(String id) {
         this.userRepository.deleteById(id);
     }

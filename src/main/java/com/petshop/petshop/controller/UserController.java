@@ -32,14 +32,13 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<User>> replaceUser(@PathVariable String id,
-                                                                      @RequestBody @Valid User requestUpdateUser){
-
-        System.out.println(requestUpdateUser.getLogin());
+                                                                      @RequestBody @Valid UserDTO requestUpdateUser){
         return ResponseEntity.ok(this.userService.updateUser(id, requestUpdateUser));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable String id){
+        System.out.println(id);
         this.userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }

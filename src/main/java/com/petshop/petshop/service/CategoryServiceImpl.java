@@ -1,6 +1,7 @@
 package com.petshop.petshop.service;
 
 import com.petshop.petshop.DTO.ApiResponseDTO;
+import com.petshop.petshop.DTO.CategoryDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
 import com.petshop.petshop.repository.CategoryRepository;
@@ -8,7 +9,7 @@ import com.petshop.petshop.response.ApiResponseBuilder;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,38 +30,45 @@ public class CategoryServiceImpl implements CategoryService{
     private ApiResponseBuilder<Category> responseBuilder;
 
     @Override
+    @Transactional(readOnly = true)
     public ApiResponseDTO<List<Category>> getAllCategory() {
         return listResponseBuilder.createSuccessResponse(categoryRepository.findAll());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ApiResponseDTO<Category> getCategory(String name) {
         return responseBuilder.createSuccessResponse(categoryRepository.findByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + name)));
     }
 
     @Override
-    public ApiResponseDTO<Category> createCategory(Category category, MultipartFile image) {
-        if(categoryRepository.existsByName(category.getName())){
-            throw new ValidationException("A category with the same name already exists: " + category.getName());
+    @Transactional
+    public ApiResponseDTO<Category> createCategory(CategoryDTO requestNewCategory) {
+        if(categoryRepository.existsByName(requestNewCategory.getName())){
+            throw new ValidationException("A category with the same name already exists: " + requestNewCategory.getName());
         }
-        String imageUrl = imageService.saveImageToServer(image);
+        String imageUrl = imageService.saveImageToServer(requestNewCategory.getImage());
+
+        Category newCategory = new Category(requestNewCategory);
+
         if (imageUrl != null) {
-            category.setImageUrl(imageUrl);
+            newCategory.setImageUrl(imageUrl);
         }
-        return responseBuilder.createSuccessResponse(categoryRepository.save(category));
+        return responseBuilder.createSuccessResponse(categoryRepository.save(newCategory));
     }
 
     @Override
-    public ApiResponseDTO<Category> updateCategory(String id, Category updateCategory, MultipartFile image) {
+    @Transactional
+    public ApiResponseDTO<Category> updateCategory(String id, CategoryDTO requestUpdateCategory) {
         return responseBuilder.createSuccessResponse(categoryRepository.findById(id).map(category -> {
-            category.setName(updateCategory.getName());
-            if(image != null && !image.isEmpty()) {
+            category.setName(requestUpdateCategory.getName());
+            if(requestUpdateCategory.getImage() != null && !requestUpdateCategory.getImage().isEmpty()) {
                 imageService.deleteImageFromServer(category.getImageUrl());
-                category.setImageUrl(imageService.saveImageToServer(image));
+                category.setImageUrl(imageService.saveImageToServer(requestUpdateCategory.getImage()));
             }
-            if (updateCategory.getImageUrl().isEmpty()){
-                imageService.deleteImageFromServer(updateCategory.getImageUrl());
+            if (requestUpdateCategory.getImageUrl().isEmpty()){
+                imageService.deleteImageFromServer(requestUpdateCategory.getImageUrl());
                 category.setImageUrl(null);
             }
             return categoryRepository.save(category);
@@ -68,6 +76,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    @Transactional
     public void deleteCategory(String id) {
         Optional<Category> category = categoryRepository.findById(id);
         if(category.isPresent()){

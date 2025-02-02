@@ -1,10 +1,12 @@
 package com.petshop.petshop.model;
 
+import com.petshop.petshop.DTO.ProductDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -35,13 +37,20 @@ public class Product {
     @Column(name = "imageUrl")
     private String imageUrl;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "product_category",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
+
+    public Product(ProductDTO product) {
+        BeanUtils.copyProperties(product, this);
+    }
+
+    public Product() {
+    }
 
     public Set<Category> getCategories() {
         return categories;
@@ -91,4 +100,15 @@ public class Product {
         this.unitsInStock = unitsInStock;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", unitPrice=" + unitPrice +
+                ", unitsInStock=" + unitsInStock +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", categories=" + categories +
+                '}';
+    }
 }

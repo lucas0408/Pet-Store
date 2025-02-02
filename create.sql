@@ -1,0 +1,12 @@
+create table category (name varchar(70) not null unique, id varchar(255) not null, image_url varchar(255), primary key (id));
+create table product (unit_price numeric(38,2) not null check (unit_price>=0), units_in_stock integer not null check (units_in_stock>=0), id varchar(255) not null, image_url varchar(255), name varchar(255) not null unique, primary key (id));
+create table product_category (category_id varchar(255) not null, product_id varchar(255) not null, primary key (category_id, product_id));
+create table users (login varchar(70) not null, name varchar(100) not null, id varchar(255) not null, password varchar(255) not null, role varchar(255) not null, primary key (id));
+alter table if exists product_category add constraint FKkud35ls1d40wpjb5htpp14q4e foreign key (category_id) references category;
+alter table if exists product_category add constraint FK2k3smhbruedlcrvu6clued06x foreign key (product_id) references product;
+create table category (name varchar(70) not null unique, id varchar(255) not null, image_url varchar(255), primary key (id));
+create table product (unit_price numeric(38,2) not null check (unit_price>=0), units_in_stock integer not null check (units_in_stock>=0), id varchar(255) not null, image_url varchar(255), name varchar(255) not null unique, primary key (id));
+create table product_category (category_id varchar(255) not null, product_id varchar(255) not null, primary key (category_id, product_id));
+create table users (login varchar(70) not null, name varchar(100) not null, id varchar(255) not null, password varchar(255) not null, role varchar(255) not null, primary key (id));
+alter table if exists product_category add constraint FKkud35ls1d40wpjb5htpp14q4e foreign key (category_id) references category;
+alter table if exists product_category add constraint FK2k3smhbruedlcrvu6clued06x foreign key (product_id) references product;

@@ -1,6 +1,7 @@
 package com.petshop.petshop.service;
 
 import com.petshop.petshop.DTO.ApiResponseDTO;
+import com.petshop.petshop.DTO.ProductDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Product;
 import com.petshop.petshop.repository.ProductRepository;
@@ -8,6 +9,7 @@ import com.petshop.petshop.response.ApiResponseBuilder;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -29,42 +31,49 @@ public class ProductServiceImpl implements ProductService{
     private ApiResponseBuilder<Product> responseBuilder;
 
     @Override
+    @Transactional(readOnly = true)
     public ApiResponseDTO<List<Product>> getAllProducts() {
         return listResponseBuilder.createSuccessResponse(productRepository.findAll());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ApiResponseDTO<Product> getProduct(String id) {
         return  responseBuilder.createSuccessResponse(productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id)));
     }
 
     @Override
-    public ApiResponseDTO<Product> createProduct(Product requestNewProduct, MultipartFile image) {
+    @Transactional
+    public ApiResponseDTO<Product> createProduct(ProductDTO requestNewProduct) {
         if (productRepository.existsByName(
                 requestNewProduct.getName().trim().replace("\\s+", ""))) {
             throw new ValidationException("Já existe um produto de mesmo nome cadastrado no sistema");
         }
-        String imageUrl = imageService.saveImageToServer(image);
+
+        Product newProduct = new Product(requestNewProduct);
+
+        String imageUrl = imageService.saveImageToServer(requestNewProduct.getImage());
         if (imageUrl != null) {
             requestNewProduct.setImageUrl(imageUrl);
         }
 
-        return responseBuilder.createSuccessResponse(productRepository.save(requestNewProduct));
+        return responseBuilder.createSuccessResponse(productRepository.save(newProduct));
     }
 
     @Override
+    @Transactional
     public ApiResponseDTO<Product> updateProduct(String id,
-                                                 Product requestUpdateProduct, MultipartFile image) {
+                                                 ProductDTO requestUpdateProduct) {
         return responseBuilder.createSuccessResponse(productRepository.findById(id)
                 .map(product -> {
                     product.setName(requestUpdateProduct.getName());
                     product.setCategories(requestUpdateProduct.getCategories());
                     product.setUnitPrice(requestUpdateProduct.getUnitPrice());
                     product.setUnitsInStock(requestUpdateProduct.getUnitsInStock());
-                    if (image != null && !image.isEmpty()) {
+                    if (requestUpdateProduct.getImage() != null && !requestUpdateProduct.getImage().isEmpty()) {
                         imageService.deleteImageFromServer(product.getImageUrl());
-                        product.setImageUrl(imageService.saveImageToServer(image));
+                        product.setImageUrl(imageService.saveImageToServer(requestUpdateProduct.getImage()));
                     }
                     if (requestUpdateProduct.getImageUrl().isEmpty()){
                         imageService.deleteImageFromServer(product.getImageUrl());
@@ -78,6 +87,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    @Transactional
     public void deleteProduct(String id) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {

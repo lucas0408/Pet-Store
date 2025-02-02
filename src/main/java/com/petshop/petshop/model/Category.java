@@ -1,8 +1,10 @@
 package com.petshop.petshop.model;
 
+import com.petshop.petshop.DTO.CategoryDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.beans.BeanUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +24,14 @@ public class Category {
 
     @Column(name = "imageUrl")
     private String imageUrl;
+
+    public Category(CategoryDTO category) {
+        BeanUtils.copyProperties(category, this);
+    }
+
+    public Category(){
+
+    }
 
     public String getId() {
         return id;
