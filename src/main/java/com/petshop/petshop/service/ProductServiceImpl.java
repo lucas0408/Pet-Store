@@ -46,6 +46,7 @@ public class ProductServiceImpl implements ProductService{
     @Override
     @Transactional
     public ApiResponseDTO<Product> createProduct(ProductDTO requestNewProduct) {
+
         if (productRepository.existsByName(
                 requestNewProduct.getName().trim().replace("\\s+", ""))) {
             throw new ValidationException("Já existe um produto de mesmo nome cadastrado no sistema");
@@ -55,7 +56,7 @@ public class ProductServiceImpl implements ProductService{
 
         String imageUrl = imageService.saveImageToServer(requestNewProduct.getImage());
         if (imageUrl != null) {
-            requestNewProduct.setImageUrl(imageUrl);
+            newProduct.setImageUrl(imageUrl);
         }
 
         return responseBuilder.createSuccessResponse(productRepository.save(newProduct));
