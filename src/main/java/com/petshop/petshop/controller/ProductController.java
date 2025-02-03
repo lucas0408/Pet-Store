@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://pet-store-front-end-3kzv.vercel.app")
 public class ProductController {
 
     @Autowired
