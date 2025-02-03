@@ -53,4 +53,17 @@ public class ProductDTO {
     public MultipartFile getImage() {
         return image;
     }
+
+    @Override
+    public String toString() {
+        return "ProductDTO{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", unitPrice=" + unitPrice +
+                ", unitsInStock=" + unitsInStock +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", image=" + image +
+                ", categories=" + categories +
+                '}';
+    }
 }

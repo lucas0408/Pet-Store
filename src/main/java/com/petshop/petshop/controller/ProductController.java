@@ -43,6 +43,8 @@ public class ProductController {
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam("productData") String productDataJson) throws IOException {
 
+        System.out.println(productDataJson);
+
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);

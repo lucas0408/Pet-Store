@@ -44,6 +44,7 @@ public class UsererviceImpl implements UserService{
     @Override
     @Transactional(readOnly = false)
     public ApiResponseDTO<User> createUser(UserDTO requestNewUser) {
+        System.out.println(requestNewUser);
         if(this.userRepository.findByLogin(requestNewUser.login()) != null) {
             throw new ValidationException("Email já cadastrado");
         };

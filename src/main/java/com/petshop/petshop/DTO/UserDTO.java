@@ -21,13 +21,5 @@ public record UserDTO(String name, String password, String role, String login) {
         return login;
     }
 
-    @Override
-    public String toString() {
-        return "UserDTO{" +
-                "name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                ", login='" + login + '\'' +
-                '}';
-    }
+
 }
