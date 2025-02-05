@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "https://pet-shop-front-end-nu51-8ltw9grer-lucas-s-projects-373fc6b9.vercel.app")
+@CrossOrigin(origins = "https://pet-shop-front-end-nu51.vercel.app")
 public class UserController {
 
     @Autowired
