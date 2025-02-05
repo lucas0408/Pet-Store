@@ -4,8 +4,11 @@ import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.CategoryDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
+import com.petshop.petshop.model.Product;
 import com.petshop.petshop.repository.CategoryRepository;
+import com.petshop.petshop.repository.ProductRepository;
 import com.petshop.petshop.response.ApiResponseBuilder;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,9 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private ApiResponseBuilder<List<Category>> listResponseBuilder;
@@ -77,11 +83,20 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     @Transactional
-    public void deleteCategory(String id) {
-        Optional<Category> category = categoryRepository.findById(id);
-        if(category.isPresent()){
-            imageService.deleteImageFromServer(category.get().getImageUrl());
-            categoryRepository.deleteById(id);
+    public void deleteCategory(String categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
+        // Busca todos os produtos que têm esta categoria
+        List<Product> products = productRepository.findByCategoriesContaining(category);
+
+        // Remove a categoria de cada produto
+        for (Product product : products) {
+            product.getCategories().remove(category);
+            productRepository.save(product);
         }
+
+        // Agora pode deletar a categoria com segurança
+        categoryRepository.delete(category);
     }
 }

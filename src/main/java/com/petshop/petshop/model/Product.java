@@ -37,7 +37,7 @@ public class Product {
     @Column(name = "imageUrl")
     private String imageUrl;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "product_category",
             joinColumns = @JoinColumn(name = "product_id"),
