@@ -75,13 +75,7 @@ public class ProductServiceImpl implements ProductService{
             newProduct.setImageUrl(imageUrl);
         }
 
-        System.out.println(newProduct);
-
-        Product product = productRepository.save(newProduct);
-
-        System.out.println(product);
-
-        return responseBuilder.createSuccessResponse(productRepository.save(product));
+        return responseBuilder.createSuccessResponse(productRepository.save(productRepository.save(newProduct)));
     }
 
     @Override

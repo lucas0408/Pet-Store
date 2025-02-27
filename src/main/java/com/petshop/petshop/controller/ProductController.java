@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "https://pet-store-render.onrender.com")
+@CrossOrigin(origins = "https://pet-shop-front-end-nu51.vercel.app")
 public class ProductController {
 
     @Autowired
