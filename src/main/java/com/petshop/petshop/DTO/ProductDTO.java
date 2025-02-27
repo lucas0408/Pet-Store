@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ProductDTO {
-    private String id;
     private String name;
     private BigDecimal unitPrice;
     private Integer unitsInStock;
@@ -24,10 +23,6 @@ public class ProductDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public Set<Category> getCategories() {
@@ -57,7 +52,6 @@ public class ProductDTO {
     @Override
     public String toString() {
         return "ProductDTO{" +
-                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", unitPrice=" + unitPrice +
                 ", unitsInStock=" + unitsInStock +
