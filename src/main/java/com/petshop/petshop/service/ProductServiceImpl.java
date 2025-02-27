@@ -61,14 +61,19 @@ public class ProductServiceImpl implements ProductService{
 
         Product newProduct = new Product(requestNewProduct);
 
-        Set<Category> managedCategories = new HashSet<>();
-        for (Category category : newProduct.getCategories()) {
-            Category managedCategory = categoryRepository.findById(category.getId())
-                    .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + category.getId()));
-            managedCategories.add(managedCategory);
-        }
+        System.out.println(newProduct);
 
-        newProduct.setCategories(managedCategories);
+        if(newProduct.getCategories() != null){
+
+            Set<Category> managedCategories = new HashSet<>();
+            for (Category category : newProduct.getCategories()) {
+                Category managedCategory = categoryRepository.findById(category.getId())
+                        .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + category.getId()));
+                managedCategories.add(managedCategory);
+
+                newProduct.setCategories(managedCategories);
+            }
+        }
 
         String imageUrl = imageService.saveImageToServer(requestNewProduct.getImage());
         if (imageUrl != null) {
