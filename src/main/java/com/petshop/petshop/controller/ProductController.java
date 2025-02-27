@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "https://pet-shop-front-end-nu51.vercel.app")
+@CrossOrigin(origins = "https://pet-store-render.onrender.com")
 public class ProductController {
 
     @Autowired
@@ -43,7 +43,7 @@ public class ProductController {
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam("productData") String productDataJson) throws IOException {
 
-        System.out.println(productDataJson);
+
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -52,8 +52,12 @@ public class ProductController {
         ProductDTO newProduct = mapper.readValue(productDataJson, ProductDTO.class);
         newProduct.setImage(image);
 
+        ApiResponseDTO<Product> Product = productService.createProduct(newProduct);
+
+        System.out.println(Product);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.createProduct(newProduct));
+                .body(Product);
     }
 
     @GetMapping("/{id}")
@@ -67,14 +71,15 @@ public class ProductController {
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam("productData") String productDataJson) throws IOException {
 
-        System.out.println(productDataJson);
-
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
 
         ProductDTO updateProduct = mapper.readValue(productDataJson, ProductDTO.class);
         updateProduct.setImage(image);
+
+
+        System.out.println(productDataJson);
 
         return ResponseEntity.ok(productService.updateProduct(id, updateProduct));
     }

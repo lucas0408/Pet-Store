@@ -3,7 +3,9 @@ package com.petshop.petshop.service;
 import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.ProductDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
+import com.petshop.petshop.model.Category;
 import com.petshop.petshop.model.Product;
+import com.petshop.petshop.repository.CategoryRepository;
 import com.petshop.petshop.repository.ProductRepository;
 import com.petshop.petshop.response.ApiResponseBuilder;
 import jakarta.validation.ValidationException;
@@ -12,14 +14,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ProductServiceImpl implements ProductService{
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Autowired
     private ImageService imageService;
@@ -54,12 +61,27 @@ public class ProductServiceImpl implements ProductService{
 
         Product newProduct = new Product(requestNewProduct);
 
+        Set<Category> managedCategories = new HashSet<>();
+        for (Category category : newProduct.getCategories()) {
+            Category managedCategory = categoryRepository.findById(category.getId())
+                    .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + category.getId()));
+            managedCategories.add(managedCategory);
+        }
+
+        newProduct.setCategories(managedCategories);
+
         String imageUrl = imageService.saveImageToServer(requestNewProduct.getImage());
         if (imageUrl != null) {
             newProduct.setImageUrl(imageUrl);
         }
 
-        return responseBuilder.createSuccessResponse(productRepository.save(newProduct));
+        System.out.println(newProduct);
+
+        Product product = productRepository.save(newProduct);
+
+        System.out.println(product);
+
+        return responseBuilder.createSuccessResponse(productRepository.save(product));
     }
 
     @Override

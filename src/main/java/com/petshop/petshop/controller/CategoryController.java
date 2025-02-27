@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
-@CrossOrigin(origins = "https://pet-shop-front-end-nu51.vercel.app")
+@CrossOrigin(origins = "https://pet-store-render.onrender.com")
 public class CategoryController {
 
     @Autowired

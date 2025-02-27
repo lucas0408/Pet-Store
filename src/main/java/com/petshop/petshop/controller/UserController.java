@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "https://pet-shop-front-end-nu51.vercel.app")
+@CrossOrigin(origins = "https://pet-store-render.onrender.com")
 public class UserController {
 
     @Autowired
@@ -26,7 +26,7 @@ public class UserController {
 
     @PostMapping()
     public ResponseEntity<ApiResponseDTO<User>> newUser(@RequestBody @Valid UserDTO requestNewUser){
-        System.out.println(requestNewUser.login());
+        System.out.println(requestNewUser);
         return ResponseEntity.ok(this.userService.createUser(requestNewUser));
     }
 
