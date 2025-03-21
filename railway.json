@@ -1,0 +1,7 @@
+{
+  "build": {
+    "env": "java",
+    "buildCommand": "mvn clean install"
+  },
+  "start": "java -jar target/*.jar"
+}
