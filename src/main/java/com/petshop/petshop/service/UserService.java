@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    public abstract ApiResponseDTO<List<User>> getAllUsers();
-    public abstract ApiResponseDTO<User> getUser(String id);
-    public abstract ApiResponseDTO<User> createUser(UserDTO requestNewUser);
-    public abstract ApiResponseDTO<User> updateUser(String id, UserDTO updateUser);
+    public abstract List<User> getAllUsers();
+    public abstract User getUser(String id);
+    public abstract User createUser(UserDTO requestNewUser);
+    public abstract User updateUser(String id, UserDTO updateUser);
     public abstract void deleteUser(String id);
 }
