@@ -1,6 +1,7 @@
 package com.petshop.petshop.service;
 
 import com.petshop.petshop.DTO.ProductDTO;
+import com.petshop.petshop.DTO.ProductResponseDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
 import com.petshop.petshop.model.Product;
@@ -16,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -30,27 +32,27 @@ public class ProductServiceImpl implements ProductService{
     private ImageService imageService;
 
     @Autowired
-    private ApiResponseBuilder<List<Product>> listResponseBuilder;
+    private ApiResponseBuilder<List<com.petshop.petshop.model.Product>> listResponseBuilder;
 
     @Autowired
-    private ApiResponseBuilder<Product> responseBuilder;
+    private ApiResponseBuilder<com.petshop.petshop.model.Product> responseBuilder;
 
     @Override
     @Transactional(readOnly = true)
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponseDTO> getAllProducts() {
+        return productRepository.findAll().stream().map(ProductResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Product getProduct(String id) {
-        return  productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+    public ProductResponseDTO getProduct(String id) {
+        return  new ProductResponseDTO(productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id)));
     }
 
     @Override
     @Transactional
-    public Product createProduct(ProductDTO requestNewProduct) {
+    public ProductResponseDTO createProduct(ProductDTO requestNewProduct) {
 
         if (productRepository.existsByName(
                 requestNewProduct.getName().trim().replace("\\s+", ""))) {
@@ -58,8 +60,6 @@ public class ProductServiceImpl implements ProductService{
         }
 
         Product newProduct = new Product(requestNewProduct);
-
-        System.out.println(newProduct);
 
         if(newProduct.getCategories() != null){
 
@@ -78,12 +78,12 @@ public class ProductServiceImpl implements ProductService{
             newProduct.setImageUrl(imageUrl);
         }
 
-        return productRepository.save(productRepository.save(newProduct));
+        return new ProductResponseDTO(productRepository.save(newProduct));
     }
 
     @Override
     @Transactional
-    public Product updateProduct(String id, ProductDTO requestUpdateProduct) {
+    public ProductResponseDTO updateProduct(String id, ProductDTO requestUpdateProduct) {
         return productRepository.findById(id)
                 .map(product -> {
                     product.setName(requestUpdateProduct.getName());
@@ -94,12 +94,12 @@ public class ProductServiceImpl implements ProductService{
                         imageService.deleteImageFromServer(product.getImageUrl());
                         product.setImageUrl(imageService.saveImageToServer(requestUpdateProduct.getImage()));
                     }
-                    if (requestUpdateProduct.getImageUrl().isEmpty()){
+                    if (requestUpdateProduct.getImage().isEmpty()){
                         imageService.deleteImageFromServer(product.getImageUrl());
                         product.setImageUrl(null);
                     }
 
-                    return productRepository.save(product);
+                    return new ProductResponseDTO(productRepository.save(product));
                 }).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id)
         );
 

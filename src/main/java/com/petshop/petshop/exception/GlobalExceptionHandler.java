@@ -100,6 +100,7 @@ public class GlobalExceptionHandler {
   //lida com erro de Exception genérica
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResponseDTO<Object>> handleGeneric(Exception ex) {
+    System.out.println(ex.getMessage());
     return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(responseBuilder.createErrorResponse(

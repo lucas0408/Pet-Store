@@ -1,11 +1,9 @@
 package com.petshop.petshop.model;
 
-import com.petshop.petshop.DTO.ProductDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
@@ -45,7 +43,7 @@ public class Product {
     )
     private Set<Category> categories = new HashSet<>();
 
-    public Product(ProductDTO product) {
+    public Product(com.petshop.petshop.DTO.ProductDTO product) {
         BeanUtils.copyProperties(product, this);
     }
 

@@ -1,8 +1,6 @@
 package com.petshop.petshop.DTO;
 
-import com.petshop.petshop.model.Product;
 import com.petshop.petshop.model.Category;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -13,51 +11,47 @@ public class ProductDTO {
     private String name;
     private BigDecimal unitPrice;
     private Integer unitsInStock;
-    private String imageUrl;
     private MultipartFile image;
     private Set<Category> categories = new HashSet<>();
 
-    public void setImage(MultipartFile image) {
-        this.image = image;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Set<Category> getCategories() {
-        return categories;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public BigDecimal getUnitPrice() {
         return unitPrice;
     }
 
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
     public Integer getUnitsInStock() {
         return unitsInStock;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public void setUnitsInStock(Integer unitsInStock) {
+        this.unitsInStock = unitsInStock;
+    }
+
+    public void setImage(MultipartFile image) {
+        this.image = image;
     }
 
     public MultipartFile getImage() {
         return image;
     }
 
-    @Override
-    public String toString() {
-        return "ProductDTO{" +
-                ", name='" + name + '\'' +
-                ", unitPrice=" + unitPrice +
-                ", unitsInStock=" + unitsInStock +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", image=" + image +
-                ", categories=" + categories +
-                '}';
+    public Set<Category> getCategories() {
+        return categories;
     }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
+
 }
