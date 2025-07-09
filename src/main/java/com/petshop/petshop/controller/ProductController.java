@@ -2,7 +2,6 @@ package com.petshop.petshop.controller;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.ProductDTO;
 import com.petshop.petshop.response.ApiResponseBuilder;
 import com.petshop.petshop.model.Product;
@@ -20,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "https://pet-shop-front-end-nu51.vercel.app")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProductController {
 
     @Autowired
@@ -34,12 +33,12 @@ public class ProductController {
 
 
     @GetMapping()
-    public ResponseEntity<ApiResponseDTO<List<Product>>> getAll(){
+    public ResponseEntity<List<Product>> getAll(){
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<ApiResponseDTO<Product>> newProduct(
+    public ResponseEntity<Product> newProduct(
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam("productData") String productDataJson) throws IOException {
 
@@ -52,7 +51,7 @@ public class ProductController {
         ProductDTO newProduct = mapper.readValue(productDataJson, ProductDTO.class);
         newProduct.setImage(image);
 
-        ApiResponseDTO<Product> Product = productService.createProduct(newProduct);
+        Product Product = productService.createProduct(newProduct);
 
         System.out.println(Product);
 
@@ -61,12 +60,12 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponseDTO<Product>> getById(@Valid @PathVariable String id){
+    public ResponseEntity<Product> getById(@Valid @PathVariable String id){
         return ResponseEntity.ok(productService.getProduct(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponseDTO<Product>> replaceProduct(
+    public ResponseEntity<Product> replaceProduct(
             @PathVariable String id,
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam("productData") String productDataJson) throws IOException {

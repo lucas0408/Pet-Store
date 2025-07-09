@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
-    public abstract ApiResponseDTO<List<Product>> getAllProducts();
-    public abstract ApiResponseDTO<Product> getProduct(String id);
-    public abstract ApiResponseDTO<Product> createProduct(ProductDTO requestNewProduct);
-    public abstract ApiResponseDTO<Product> updateProduct(String id, ProductDTO requestUpdateProduct);
+    public abstract List<Product> getAllProducts();
+    public abstract Product getProduct(String id);
+    public abstract Product createProduct(ProductDTO requestNewProduct);
+    public abstract Product updateProduct(String id, ProductDTO requestUpdateProduct);
     public abstract void deleteProduct(String id);
 }

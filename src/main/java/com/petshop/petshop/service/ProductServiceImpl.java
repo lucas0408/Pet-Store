@@ -1,6 +1,5 @@
 package com.petshop.petshop.service;
 
-import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.ProductDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
@@ -12,7 +11,6 @@ import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
@@ -39,20 +37,20 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional(readOnly = true)
-    public ApiResponseDTO<List<Product>> getAllProducts() {
-        return listResponseBuilder.createSuccessResponse(productRepository.findAll());
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ApiResponseDTO<Product> getProduct(String id) {
-        return  responseBuilder.createSuccessResponse(productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id)));
+    public Product getProduct(String id) {
+        return  productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
     @Override
     @Transactional
-    public ApiResponseDTO<Product> createProduct(ProductDTO requestNewProduct) {
+    public Product createProduct(ProductDTO requestNewProduct) {
 
         if (productRepository.existsByName(
                 requestNewProduct.getName().trim().replace("\\s+", ""))) {
@@ -80,14 +78,13 @@ public class ProductServiceImpl implements ProductService{
             newProduct.setImageUrl(imageUrl);
         }
 
-        return responseBuilder.createSuccessResponse(productRepository.save(productRepository.save(newProduct)));
+        return productRepository.save(productRepository.save(newProduct));
     }
 
     @Override
     @Transactional
-    public ApiResponseDTO<Product> updateProduct(String id,
-                                                 ProductDTO requestUpdateProduct) {
-        return responseBuilder.createSuccessResponse(productRepository.findById(id)
+    public Product updateProduct(String id, ProductDTO requestUpdateProduct) {
+        return productRepository.findById(id)
                 .map(product -> {
                     product.setName(requestUpdateProduct.getName());
                     product.setCategories(requestUpdateProduct.getCategories());
@@ -103,7 +100,7 @@ public class ProductServiceImpl implements ProductService{
                     }
 
                     return productRepository.save(product);
-                }).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id))
+                }).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id)
         );
 
     }
