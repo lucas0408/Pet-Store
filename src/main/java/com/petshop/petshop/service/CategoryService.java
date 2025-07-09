@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryService {
-    public abstract ApiResponseDTO<List<Category>> getAllCategory();
-    public abstract ApiResponseDTO<Category> getCategory(String id);
-    public abstract ApiResponseDTO<Category> createCategory(CategoryDTO category);
-    public abstract ApiResponseDTO<Category> updateCategory(String id, CategoryDTO updateCategory);
+    public abstract List<Category> getAllCategory();
+    public abstract Category getCategory(String id);
+    public abstract Category createCategory(CategoryDTO category);
+    public abstract Category updateCategory(String id, CategoryDTO updateCategory);
     public abstract void deleteCategory(String id);
 }
