@@ -1,14 +1,25 @@
 package com.petshop.petshop.DTO;
 
 import com.petshop.petshop.model.Category;
+import com.petshop.petshop.model.Product;
 import org.springframework.web.multipart.MultipartFile;
 
-public record CategoryDTO(
+import java.util.HashSet;
+import java.util.stream.Collectors;
+
+public record CategoryResponseDTO(
         String id,
         String name,
-        String imageUrl,
-        MultipartFile image
+        String imageUrl
 ) {
+
+    public CategoryResponseDTO(Category category) {
+        this(
+                category.getId(),
+                category.getName(),
+                category.getImageUrl()
+        );
+    }
 
     @Override
     public String id() {
@@ -25,8 +36,4 @@ public record CategoryDTO(
         return imageUrl;
     }
 
-    @Override
-    public MultipartFile image() {
-        return image;
-    }
 }

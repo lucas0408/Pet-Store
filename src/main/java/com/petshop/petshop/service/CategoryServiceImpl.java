@@ -2,6 +2,7 @@ package com.petshop.petshop.service;
 
 import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.CategoryDTO;
+import com.petshop.petshop.DTO.CategoryResponseDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
 import com.petshop.petshop.model.Product;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
@@ -28,47 +30,47 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
+    public List<CategoryResponseDTO> getAllCategory() {
+        return categoryRepository.findAll().stream().map(CategoryResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Category getCategory(String name) {
-        return categoryRepository.findByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + name));
+    public CategoryResponseDTO getCategory(String name) {
+        return new CategoryResponseDTO(categoryRepository.findByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + name)));
     }
 
     @Override
     @Transactional
-    public Category createCategory(CategoryDTO requestNewCategory) {
-        if(categoryRepository.existsByName(requestNewCategory.getName())){
-            throw new ValidationException("A category with the same name already exists: " + requestNewCategory.getName());
+    public CategoryResponseDTO createCategory(CategoryDTO requestNewCategory) {
+        if(categoryRepository.existsByName(requestNewCategory.name())){
+            throw new ValidationException("A category with the same name already exists: " + requestNewCategory.name());
         }
-        String imageUrl = imageService.saveImageToServer(requestNewCategory.getImage());
+        String imageUrl = imageService.saveImageToServer(requestNewCategory.image());
 
         Category newCategory = new Category(requestNewCategory);
 
         if (imageUrl != null) {
             newCategory.setImageUrl(imageUrl);
         }
-        return categoryRepository.save(newCategory);
+        return new CategoryResponseDTO(categoryRepository.save(newCategory));
     }
 
     @Override
     @Transactional
-    public Category updateCategory(String id, CategoryDTO requestUpdateCategory) {
+    public CategoryResponseDTO updateCategory(String id, CategoryDTO requestUpdateCategory) {
         return categoryRepository.findById(id).map(category -> {
-            category.setName(requestUpdateCategory.getName());
-            if(requestUpdateCategory.getImage() != null && !requestUpdateCategory.getImage().isEmpty()) {
+            category.setName(requestUpdateCategory.name());
+            if(requestUpdateCategory.image() != null && !requestUpdateCategory.image().isEmpty()) {
                 imageService.deleteImageFromServer(category.getImageUrl());
-                category.setImageUrl(imageService.saveImageToServer(requestUpdateCategory.getImage()));
+                category.setImageUrl(imageService.saveImageToServer(requestUpdateCategory.image()));
             }
-            if (requestUpdateCategory.getImageUrl().isEmpty()){
-                imageService.deleteImageFromServer(requestUpdateCategory.getImageUrl());
+            if (requestUpdateCategory.imageUrl().isEmpty()){
+                imageService.deleteImageFromServer(requestUpdateCategory.imageUrl());
                 category.setImageUrl(null);
             }
-            return categoryRepository.save(category);
+            return new CategoryResponseDTO(categoryRepository.save(category));
         }).orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
     }
 

@@ -17,12 +17,12 @@ public record ProductResponseDTO(
 ) {
     public ProductResponseDTO(Product product) {
         this(
-                null,
+                product.getId(),
                 product.getName(),
                 product.getUnitPrice(),
                 product.getUnitsInStock(),
                 product.getImageUrl(),
-                product.getCategories() != null ? product.getCategories().stream().map(category -> category.getId()).collect(Collectors.toSet()) : new HashSet<>()
+                !product.getCategories().contains(null) ? product.getCategories().stream().map(category -> category.getId()).collect(Collectors.toSet()) : new HashSet<>()
         );
     }
 }

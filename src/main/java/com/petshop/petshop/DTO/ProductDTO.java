@@ -12,7 +12,16 @@ public class ProductDTO {
     private BigDecimal unitPrice;
     private Integer unitsInStock;
     private MultipartFile image;
+    private String imageUrl;
     private Set<Category> categories = new HashSet<>();
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public String getName() {
         return name;

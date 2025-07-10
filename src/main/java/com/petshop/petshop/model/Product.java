@@ -1,5 +1,6 @@
 package com.petshop.petshop.model;
 
+import com.petshop.petshop.DTO.ProductDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -43,7 +44,7 @@ public class Product {
     )
     private Set<Category> categories = new HashSet<>();
 
-    public Product(com.petshop.petshop.DTO.ProductDTO product) {
+    public Product(ProductDTO product) {
         BeanUtils.copyProperties(product, this);
     }
 

@@ -26,8 +26,10 @@ public class ProductController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProductResponseDTO> newProduct(@RequestBody @Valid ProductDTO productData){
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productData));
+    public ResponseEntity<ProductResponseDTO> newProduct(
+            @ModelAttribute @Valid ProductDTO productData) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.createProduct(productData));
     }
 
     @GetMapping("/{id}")
@@ -37,7 +39,8 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> replaceProduct(@PathVariable String id,
-                                                             @RequestBody @Valid ProductDTO updateProduct){
+                                                             @ModelAttribute @Valid ProductDTO updateProduct){
+        System.out.println(updateProduct);
         return ResponseEntity.ok(productService.updateProduct(id, updateProduct));
     }
 

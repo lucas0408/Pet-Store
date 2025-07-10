@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class productServiceImpl implements ProductService{
 
     @Autowired
     private ProductRepository productRepository;
@@ -30,12 +30,6 @@ public class ProductServiceImpl implements ProductService{
 
     @Autowired
     private ImageService imageService;
-
-    @Autowired
-    private ApiResponseBuilder<List<com.petshop.petshop.model.Product>> listResponseBuilder;
-
-    @Autowired
-    private ApiResponseBuilder<com.petshop.petshop.model.Product> responseBuilder;
 
     @Override
     @Transactional(readOnly = true)
@@ -61,10 +55,11 @@ public class ProductServiceImpl implements ProductService{
 
         Product newProduct = new Product(requestNewProduct);
 
-        if(newProduct.getCategories() != null){
+        if(!newProduct.getCategories().isEmpty() && !newProduct.getCategories().contains(null)){
 
             Set<Category> managedCategories = new HashSet<>();
             for (Category category : newProduct.getCategories()) {
+
                 Category managedCategory = categoryRepository.findById(category.getId())
                         .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + category.getId()));
                 managedCategories.add(managedCategory);
@@ -94,14 +89,14 @@ public class ProductServiceImpl implements ProductService{
                         imageService.deleteImageFromServer(product.getImageUrl());
                         product.setImageUrl(imageService.saveImageToServer(requestUpdateProduct.getImage()));
                     }
-                    if (requestUpdateProduct.getImage().isEmpty()){
+                    if (requestUpdateProduct.getImageUrl().isEmpty()){
                         imageService.deleteImageFromServer(product.getImageUrl());
                         product.setImageUrl(null);
                     }
 
                     return new ProductResponseDTO(productRepository.save(product));
                 }).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id)
-        );
+                );
 
     }
 
