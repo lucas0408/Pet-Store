@@ -1,6 +1,7 @@
 package com.petshop.petshop.controller;
 
 import com.petshop.petshop.DTO.UserDTO;
+import com.petshop.petshop.DTO.UserResponseDTO;
 import com.petshop.petshop.model.User;
 import com.petshop.petshop.service.UserService;
 import jakarta.validation.Valid;
@@ -19,18 +20,18 @@ public class UserController {
     private UserService userService;
 
     @GetMapping()
-    public ResponseEntity<List<User>> getAll(){
+    public ResponseEntity<List<UserResponseDTO>> getAll(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @PostMapping()
-    public ResponseEntity<User> newUser(@RequestBody @Valid UserDTO requestNewUser){
+    public ResponseEntity<UserResponseDTO> newUser(@RequestBody @Valid UserDTO requestNewUser){
         System.out.println(requestNewUser);
         return ResponseEntity.ok(this.userService.createUser(requestNewUser));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> replaceUser(@PathVariable String id,
+    public ResponseEntity<UserResponseDTO> replaceUser(@PathVariable String id,
                                                                       @RequestBody @Valid UserDTO requestUpdateUser){
         return ResponseEntity.ok(this.userService.updateUser(id, requestUpdateUser));
     }

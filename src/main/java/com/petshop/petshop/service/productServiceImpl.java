@@ -7,7 +7,6 @@ import com.petshop.petshop.model.Category;
 import com.petshop.petshop.model.Product;
 import com.petshop.petshop.repository.CategoryRepository;
 import com.petshop.petshop.repository.ProductRepository;
-import com.petshop.petshop.response.ApiResponseBuilder;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,10 +67,12 @@ public class productServiceImpl implements ProductService{
             }
         }
 
+        System.out.println(requestNewProduct.getImage());
+
         String imageUrl = imageService.saveImageToServer(requestNewProduct.getImage());
-        if (imageUrl != null) {
-            newProduct.setImageUrl(imageUrl);
-        }
+        System.out.println(imageUrl);
+        newProduct.setImageUrl(imageUrl);
+
 
         return new ProductResponseDTO(productRepository.save(newProduct));
     }
@@ -79,6 +80,7 @@ public class productServiceImpl implements ProductService{
     @Override
     @Transactional
     public ProductResponseDTO updateProduct(String id, ProductDTO requestUpdateProduct) {
+        System.out.println(requestUpdateProduct);
         return productRepository.findById(id)
                 .map(product -> {
                     product.setName(requestUpdateProduct.getName());

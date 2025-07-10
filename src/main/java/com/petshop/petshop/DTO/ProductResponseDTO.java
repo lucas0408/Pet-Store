@@ -25,4 +25,5 @@ public record ProductResponseDTO(
                 !product.getCategories().contains(null) ? product.getCategories().stream().map(category -> category.getId()).collect(Collectors.toSet()) : new HashSet<>()
         );
     }
+
 }

@@ -40,7 +40,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> replaceProduct(@PathVariable String id,
                                                              @ModelAttribute @Valid ProductDTO updateProduct){
-        System.out.println(updateProduct);
+
         return ResponseEntity.ok(productService.updateProduct(id, updateProduct));
     }
 

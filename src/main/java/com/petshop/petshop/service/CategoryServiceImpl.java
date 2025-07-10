@@ -67,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService{
                 category.setImageUrl(imageService.saveImageToServer(requestUpdateCategory.image()));
             }
             if (requestUpdateCategory.imageUrl().isEmpty()){
-                imageService.deleteImageFromServer(requestUpdateCategory.imageUrl());
+                imageService.deleteImageFromServer(category.getImageUrl());
                 category.setImageUrl(null);
             }
             return new CategoryResponseDTO(categoryRepository.save(category));
@@ -88,6 +88,7 @@ public class CategoryServiceImpl implements CategoryService{
             product.getCategories().remove(category);
             productRepository.save(product);
         }
+        imageService.deleteImageFromServer(category.getImageUrl());
 
         // Agora pode deletar a categoria com segurança
         categoryRepository.delete(category);
