@@ -1,6 +1,5 @@
 package com.petshop.petshop.service;
 
-import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.CategoryDTO;
 import com.petshop.petshop.DTO.CategoryResponseDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;

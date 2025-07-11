@@ -1,8 +1,6 @@
 package com.petshop.petshop.exception;
 
-import com.petshop.petshop.DTO.ApiResponseDTO;
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -85,7 +83,6 @@ public class GlobalExceptionHandler {
   //lida com erro de Exception genérica
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Object> handleGeneric(Exception ex) {
-    System.out.println(ex.getMessage());
     return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(Collections.singletonList("An unexpected error occurred"));

@@ -66,13 +66,8 @@ public class productServiceImpl implements ProductService{
                 newProduct.setCategories(managedCategories);
             }
         }
-
-        System.out.println(requestNewProduct.getImage());
-
         String imageUrl = imageService.saveImageToServer(requestNewProduct.getImage());
-        System.out.println(imageUrl);
         newProduct.setImageUrl(imageUrl);
-
 
         return new ProductResponseDTO(productRepository.save(newProduct));
     }
@@ -80,7 +75,6 @@ public class productServiceImpl implements ProductService{
     @Override
     @Transactional
     public ProductResponseDTO updateProduct(String id, ProductDTO requestUpdateProduct) {
-        System.out.println(requestUpdateProduct);
         return productRepository.findById(id)
                 .map(product -> {
                     product.setName(requestUpdateProduct.getName());
