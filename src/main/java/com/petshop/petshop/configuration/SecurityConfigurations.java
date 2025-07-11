@@ -32,7 +32,7 @@ public class SecurityConfigurations {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize  -> authorize
-                        .requestMatchers("api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/products/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/categories/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/users/**").permitAll()
@@ -46,7 +46,7 @@ public class SecurityConfigurations {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://pet-shop-front-end-nu51.vercel.app")); // Seu domínio do frontend
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Seu domínio do frontend
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

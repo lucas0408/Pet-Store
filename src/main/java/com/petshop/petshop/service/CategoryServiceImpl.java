@@ -2,20 +2,19 @@ package com.petshop.petshop.service;
 
 import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.CategoryDTO;
+import com.petshop.petshop.DTO.CategoryResponseDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
 import com.petshop.petshop.model.Product;
 import com.petshop.petshop.repository.CategoryRepository;
 import com.petshop.petshop.repository.ProductRepository;
-import com.petshop.petshop.response.ApiResponseBuilder;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
@@ -29,56 +28,50 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private ApiResponseBuilder<List<Category>> listResponseBuilder;
-
-    @Autowired
-    private ApiResponseBuilder<Category> responseBuilder;
-
     @Override
     @Transactional(readOnly = true)
-    public ApiResponseDTO<List<Category>> getAllCategory() {
-        return listResponseBuilder.createSuccessResponse(categoryRepository.findAll());
+    public List<CategoryResponseDTO> getAllCategory() {
+        return categoryRepository.findAll().stream().map(CategoryResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ApiResponseDTO<Category> getCategory(String name) {
-        return responseBuilder.createSuccessResponse(categoryRepository.findByName(name)
+    public CategoryResponseDTO getCategory(String name) {
+        return new CategoryResponseDTO(categoryRepository.findByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + name)));
     }
 
     @Override
     @Transactional
-    public ApiResponseDTO<Category> createCategory(CategoryDTO requestNewCategory) {
-        if(categoryRepository.existsByName(requestNewCategory.getName())){
-            throw new ValidationException("A category with the same name already exists: " + requestNewCategory.getName());
+    public CategoryResponseDTO createCategory(CategoryDTO requestNewCategory) {
+        if(categoryRepository.existsByName(requestNewCategory.name())){
+            throw new ValidationException("A category with the same name already exists: " + requestNewCategory.name());
         }
-        String imageUrl = imageService.saveImageToServer(requestNewCategory.getImage());
+        String imageUrl = imageService.saveImageToServer(requestNewCategory.image());
 
         Category newCategory = new Category(requestNewCategory);
 
         if (imageUrl != null) {
             newCategory.setImageUrl(imageUrl);
         }
-        return responseBuilder.createSuccessResponse(categoryRepository.save(newCategory));
+        return new CategoryResponseDTO(categoryRepository.save(newCategory));
     }
 
     @Override
     @Transactional
-    public ApiResponseDTO<Category> updateCategory(String id, CategoryDTO requestUpdateCategory) {
-        return responseBuilder.createSuccessResponse(categoryRepository.findById(id).map(category -> {
-            category.setName(requestUpdateCategory.getName());
-            if(requestUpdateCategory.getImage() != null && !requestUpdateCategory.getImage().isEmpty()) {
+    public CategoryResponseDTO updateCategory(String id, CategoryDTO requestUpdateCategory) {
+        return categoryRepository.findById(id).map(category -> {
+            category.setName(requestUpdateCategory.name());
+            if(requestUpdateCategory.image() != null && !requestUpdateCategory.image().isEmpty()) {
                 imageService.deleteImageFromServer(category.getImageUrl());
-                category.setImageUrl(imageService.saveImageToServer(requestUpdateCategory.getImage()));
+                category.setImageUrl(imageService.saveImageToServer(requestUpdateCategory.image()));
             }
-            if (requestUpdateCategory.getImageUrl().isEmpty()){
-                imageService.deleteImageFromServer(requestUpdateCategory.getImageUrl());
+            if (requestUpdateCategory.imageUrl().isEmpty()){
+                imageService.deleteImageFromServer(category.getImageUrl());
                 category.setImageUrl(null);
             }
-            return categoryRepository.save(category);
-        }).orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id)));
+            return new CategoryResponseDTO(categoryRepository.save(category));
+        }).orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
     }
 
     @Override
@@ -95,6 +88,7 @@ public class CategoryServiceImpl implements CategoryService{
             product.getCategories().remove(category);
             productRepository.save(product);
         }
+        imageService.deleteImageFromServer(category.getImageUrl());
 
         // Agora pode deletar a categoria com segurança
         categoryRepository.delete(category);

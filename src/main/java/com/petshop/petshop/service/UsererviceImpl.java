@@ -2,10 +2,10 @@ package com.petshop.petshop.service;
 
 import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.UserDTO;
+import com.petshop.petshop.DTO.UserResponseDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.User;
 import com.petshop.petshop.repository.UserRepository;
-import com.petshop.petshop.response.ApiResponseBuilder;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,15 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsererviceImpl implements UserService{
-
-    @Autowired
-    private ApiResponseBuilder<List<User>> listResponseBuilder;
-
-    @Autowired
-    private ApiResponseBuilder<User> responseBuilder;
 
     @Autowired
     UserRepository userRepository;
@@ -30,21 +25,21 @@ public class UsererviceImpl implements UserService{
 
     @Override
     @Transactional(readOnly = true)
-    public ApiResponseDTO<List<User>> getAllUsers() {
-        return listResponseBuilder.createSuccessResponse(this.userRepository.findAll());
+    public List<UserResponseDTO> getAllUsers() {
+        return this.userRepository.findAll().stream().map(UserResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ApiResponseDTO<User> getUser(String id) {
-        return responseBuilder.createSuccessResponse(this.userRepository.findById(id)
+    public UserResponseDTO getUser(String id) {
+        return new UserResponseDTO(this.userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id)));
     }
 
     @Override
     @Transactional(readOnly = false)
-    public ApiResponseDTO<User> createUser(UserDTO requestNewUser) {
-        System.out.println(requestNewUser);
+    public UserResponseDTO createUser(UserDTO requestNewUser) {
         if(this.userRepository.findByLogin(requestNewUser.login()) != null) {
             throw new ValidationException("Email já cadastrado");
         };
@@ -55,19 +50,19 @@ public class UsererviceImpl implements UserService{
 
         System.out.println(newUser);
 
-        return responseBuilder.createSuccessResponse(this.userRepository.save(newUser));
+        return new UserResponseDTO(this.userRepository.save(newUser));
     }
 
     @Override
     @Transactional(readOnly = false)
-    public ApiResponseDTO<User> updateUser(String id, UserDTO updateUser) {
-        return responseBuilder.createSuccessResponse(this.userRepository.findById(id).map(user ->{
+    public UserResponseDTO updateUser(String id, UserDTO updateUser) {
+        return new UserResponseDTO(this.userRepository.findById(id).map(user ->{
             user.setName(updateUser.name());
-                user.setLogin(updateUser.login());
-                if(!updateUser.password().equals("any")){
-                    user.setPassword(new BCryptPasswordEncoder().encode(updateUser.password()));
-                }
-                user.setRole(updateUser.role());
+            user.setLogin(updateUser.login());
+            if(!updateUser.password().equals("any")){
+                user.setPassword(new BCryptPasswordEncoder().encode(updateUser.password()));
+            }
+            user.setRole(updateUser.role());
             return userRepository.save(user);
         }).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id)));
     }

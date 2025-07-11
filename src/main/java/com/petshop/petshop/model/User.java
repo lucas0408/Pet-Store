@@ -44,7 +44,6 @@ public class User implements UserDetails {
         this.role = role;
         this.password = password;
     }
-
     public String getName() {
         return name;
     }
