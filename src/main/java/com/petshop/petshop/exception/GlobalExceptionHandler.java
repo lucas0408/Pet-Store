@@ -1,8 +1,6 @@
 package com.petshop.petshop.exception;
 
-import com.petshop.petshop.DTO.ApiResponseDTO;
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

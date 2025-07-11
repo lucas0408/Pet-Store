@@ -1,6 +1,5 @@
 package com.petshop.petshop.service;
 
-import com.petshop.petshop.DTO.ApiResponseDTO;
 import com.petshop.petshop.DTO.UserDTO;
 import com.petshop.petshop.DTO.UserResponseDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
