@@ -21,14 +21,18 @@ import java.util.stream.Collectors;
 @Service
 public class productServiceImpl implements ProductService{
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ImageService imageService;
 
     @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private ImageService imageService;
+    public productServiceImpl(ProductRepository productRepository,
+                        CategoryRepository categoryRepository,
+                        ImageService imageService) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.imageService = imageService;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -67,12 +71,8 @@ public class productServiceImpl implements ProductService{
             }
         }
 
-        System.out.println(requestNewProduct.getImage());
-
         String imageUrl = imageService.saveImageToServer(requestNewProduct.getImage());
-        System.out.println(imageUrl);
         newProduct.setImageUrl(imageUrl);
-
 
         return new ProductResponseDTO(productRepository.save(newProduct));
     }
@@ -80,7 +80,6 @@ public class productServiceImpl implements ProductService{
     @Override
     @Transactional
     public ProductResponseDTO updateProduct(String id, ProductDTO requestUpdateProduct) {
-        System.out.println(requestUpdateProduct);
         return productRepository.findById(id)
                 .map(product -> {
                     product.setName(requestUpdateProduct.getName());

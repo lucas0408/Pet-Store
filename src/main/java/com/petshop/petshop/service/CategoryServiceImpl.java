@@ -8,7 +8,6 @@ import com.petshop.petshop.model.Product;
 import com.petshop.petshop.repository.CategoryRepository;
 import com.petshop.petshop.repository.ProductRepository;
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,14 +17,19 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryServiceImpl implements CategoryService{
 
-    @Autowired
-    private ImageService imageService;
+    private final ImageService imageService;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    public CategoryServiceImpl(ImageService imageService,
+                               CategoryRepository categoryRepository,
+                               ProductRepository productRepository){
+        this.imageService = imageService;
+        this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
+    }
 
     @Override
     @Transactional(readOnly = true)

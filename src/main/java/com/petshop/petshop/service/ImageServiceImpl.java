@@ -51,7 +51,7 @@ public class ImageServiceImpl implements ImageService {
     public String saveImageToServer(MultipartFile image) {
         if (image != null && !image.isEmpty()) {
             try {
-                String fileName = UUID.randomUUID().toString() + "_" +
+                String fileName = UUID.randomUUID() + "_" +
                         image.getOriginalFilename().replaceAll("[^a-zA-Z0-9.]", "_");
 
                 Path filePath = Paths.get(uploadDir, fileName);

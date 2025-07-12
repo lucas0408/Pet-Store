@@ -83,7 +83,6 @@ public class GlobalExceptionHandler {
   //lida com erro de Exception genérica
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Object> handleGeneric(Exception ex) {
-    System.out.println(ex.getMessage());
     return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(Collections.singletonList("An unexpected error occurred"));

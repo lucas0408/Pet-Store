@@ -6,7 +6,6 @@ import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.User;
 import com.petshop.petshop.repository.UserRepository;
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +16,11 @@ import java.util.stream.Collectors;
 @Service
 public class UsererviceImpl implements UserService{
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
+    public UsererviceImpl(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -36,23 +37,21 @@ public class UsererviceImpl implements UserService{
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public UserResponseDTO createUser(UserDTO requestNewUser) {
         if(this.userRepository.findByLogin(requestNewUser.login()) != null) {
             throw new ValidationException("Email já cadastrado");
-        };
+        }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(requestNewUser.password());
 
         User newUser = new User(requestNewUser.name(), requestNewUser.login(), requestNewUser.role(), encryptedPassword);
 
-        System.out.println(newUser);
-
         return new UserResponseDTO(this.userRepository.save(newUser));
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public UserResponseDTO updateUser(String id, UserDTO updateUser) {
         return new UserResponseDTO(this.userRepository.findById(id).map(user ->{
             user.setName(updateUser.name());
@@ -66,7 +65,7 @@ public class UsererviceImpl implements UserService{
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void deleteUser(String id) {
         this.userRepository.deleteById(id);
     }
