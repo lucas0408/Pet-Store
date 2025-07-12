@@ -19,16 +19,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class productServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService{
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ImageService imageService;
 
     @Autowired
-    public productServiceImpl(ProductRepository productRepository,
-                        CategoryRepository categoryRepository,
-                        ImageService imageService) {
+    public ProductServiceImpl(ProductRepository productRepository,
+                              CategoryRepository categoryRepository,
+                              ImageService imageService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.imageService = imageService;
@@ -80,6 +80,10 @@ public class productServiceImpl implements ProductService{
     @Override
     @Transactional
     public ProductResponseDTO updateProduct(String id, ProductDTO requestUpdateProduct) {
+        if (productRepository.existsByName(
+                requestUpdateProduct.getName().trim().replace("\\s+", ""))) {
+            throw new ValidationException("Já existe um produto de mesmo nome cadastrado no sistema");
+        }
         return productRepository.findById(id)
                 .map(product -> {
                     product.setName(requestUpdateProduct.getName());
@@ -104,11 +108,10 @@ public class productServiceImpl implements ProductService{
     @Override
     @Transactional
     public void deleteProduct(String id) {
-        Optional<Product> product = productRepository.findById(id);
-        if (product.isPresent()) {
-            imageService.deleteImageFromServer(product.get().getImageUrl());
-            productRepository.deleteById(id);
-        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        imageService.deleteImageFromServer(product.getImageUrl());
+        productRepository.deleteById(id);
     }
 
 }
