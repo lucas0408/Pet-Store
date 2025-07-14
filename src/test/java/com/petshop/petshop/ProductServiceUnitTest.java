@@ -33,10 +33,10 @@ public class ProductServiceUnitTest {
     private ProductRepository productRepository;
 
     @Mock
-    private CategoryRepository categoryRepository;
+    private ImageService imageService;
 
     @Mock
-    private ImageService imageService;
+    private CategoryRepository categoryRepository;
 
     @InjectMocks
     private ProductServiceImpl productService;
@@ -78,7 +78,6 @@ public class ProductServiceUnitTest {
     @DisplayName("Should not get product by id")
     public void NotGetProductById(){
 
-        Product product = createProduct();
 
         given(productRepository.findById("f47ac10b-58cc-4372-a567-0e02b2c3d479")).willReturn(Optional.empty());
 
@@ -93,17 +92,41 @@ public class ProductServiceUnitTest {
     public void CreateProductByHappyFlow(){
 
         ProductDTO productDTO = createProductDTO();
-
         Product product = createProduct();
 
-        given(productRepository.existsByName(productDTO.getName())).willReturn(false);
-        given(categoryRepository.findById(getCategory1().getId())).willReturn(Optional.of(getCategory1()));
-        given(categoryRepository.findById(getCategory2().getId())).willReturn(Optional.of(getCategory2()));
+        product.setCategories(Collections.emptySet());
+        productDTO.setCategories(Collections.emptySet());
+
+        given(productRepository.existsByName(product.getName())).willReturn(false);
+        given(productRepository.save(any(Product.class))).willReturn(product);
+
+        ProductResponseDTO productResponseDTO = productService.createProduct(productDTO);
+
+        System.out.println(product);
+
+        assertEquals(productResponseDTO, new ProductResponseDTO(product));
+
+    }
+
+    @Test
+    @DisplayName("Should create a product with category")
+    public void CreateProductWithCategory(){
+        ProductDTO productDTO = createProductDTO();
+        Product product = createProduct();
+
+        Iterator<Category> iterator = productDTO.getCategories().iterator();
+        Category category1 = iterator.next();
+        Category category2 = iterator.next();
+
+        given(productRepository.existsByName(product.getName())).willReturn(false);
+        given(categoryRepository.findById(category1.getId())).willReturn(Optional.of(category1));
+        given(categoryRepository.findById(category2.getId())).willReturn(Optional.of(category2));
         given(productRepository.save(any(Product.class))).willReturn(product);
 
         ProductResponseDTO productResponseDTO = productService.createProduct(productDTO);
 
         assertEquals(productResponseDTO, new ProductResponseDTO(product));
+        assertEquals(productResponseDTO.categories(), new ProductResponseDTO(product).categories());
     }
 
     @Test
@@ -111,8 +134,6 @@ public class ProductServiceUnitTest {
     public void CreateProductWithExistName(){
 
         ProductDTO productDTO = createProductDTO();
-
-        Product product = createProduct();
 
         given(productRepository.existsByName(productDTO.getName())).willReturn(true);
 
@@ -128,6 +149,26 @@ public class ProductServiceUnitTest {
     @Test
     @DisplayName("Should update a product")
     public void UpdateProductByHappyFlow(){
+
+        ProductDTO updateProductDTO = createProductDTO();
+
+        Product product = createProduct();
+
+        product.setCategories(Collections.emptySet());
+        updateProductDTO.setCategories(Collections.emptySet());
+
+        given(productRepository.existsByName(updateProductDTO.getName())).willReturn(false);
+        given(productRepository.findById(product.getId())).willReturn(Optional.of(product));
+        given(productRepository.save(any(Product.class))).willReturn(product);
+
+        ProductResponseDTO productResponseDTO = productService.updateProduct(product.getId(), updateProductDTO);
+
+        assertEquals(productResponseDTO, new ProductResponseDTO(product));
+    }
+
+    @Test
+    @DisplayName("Should update a product with category")
+    public void UpdateProductWithCategory(){
 
         ProductDTO updateProductDTO = createProductDTO();
 
@@ -218,14 +259,14 @@ public class ProductServiceUnitTest {
 
     public Category getCategory1(){
         Category categoria1 = new Category();
-        categoria1.setId("1");
+        categoria1.setId(UUID.randomUUID().toString());
         categoria1.setName("Alimentos");
         return categoria1;
     }
 
     public Category getCategory2(){
         Category categoria2 = new Category();
-        categoria2.setId("2");
+        categoria2.setId(UUID.randomUUID().toString());
         categoria2.setName("Pets");
         return categoria2;
     }
@@ -243,6 +284,4 @@ public class ProductServiceUnitTest {
 
         return product;
     }
-
-
 }
