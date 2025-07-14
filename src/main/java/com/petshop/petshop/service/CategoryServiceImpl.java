@@ -63,6 +63,9 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public CategoryResponseDTO updateCategory(String id, CategoryDTO requestUpdateCategory) {
+        if(categoryRepository.existsByName(requestUpdateCategory.name())){
+            throw new ValidationException("A category with the same name already exists: " + requestUpdateCategory.name());
+        }
         return categoryRepository.findById(id).map(category -> {
             category.setName(requestUpdateCategory.name());
             if(requestUpdateCategory.image() != null && !requestUpdateCategory.image().isEmpty()) {
@@ -83,17 +86,14 @@ public class CategoryServiceImpl implements CategoryService{
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
-        // Busca todos os produtos que têm esta categoria
         List<Product> products = productRepository.findByCategoriesContaining(category);
 
-        // Remove a categoria de cada produto
         for (Product product : products) {
             product.getCategories().remove(category);
             productRepository.save(product);
         }
         imageService.deleteImageFromServer(category.getImageUrl());
 
-        // Agora pode deletar a categoria com segurança
         categoryRepository.delete(category);
     }
 }
