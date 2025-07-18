@@ -44,8 +44,8 @@ public class Product {
     )
     private Set<Category> categories = new HashSet<>();
 
-    public Product(ProductDTO product) {
-        BeanUtils.copyProperties(product, this);
+    public Product(ProductDTO productDTO) {
+        BeanUtils.copyProperties(productDTO, this);
     }
 
     public Product() {

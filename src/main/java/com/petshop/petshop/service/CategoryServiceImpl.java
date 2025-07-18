@@ -8,7 +8,6 @@ import com.petshop.petshop.model.Product;
 import com.petshop.petshop.repository.CategoryRepository;
 import com.petshop.petshop.repository.ProductRepository;
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,14 +17,19 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryServiceImpl implements CategoryService{
 
-    @Autowired
-    private ImageService imageService;
+    private final ImageService imageService;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    public CategoryServiceImpl(ImageService imageService,
+                               CategoryRepository categoryRepository,
+                               ProductRepository productRepository){
+        this.imageService = imageService;
+        this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -59,6 +63,9 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public CategoryResponseDTO updateCategory(String id, CategoryDTO requestUpdateCategory) {
+        if(categoryRepository.existsByName(requestUpdateCategory.name())){
+            throw new ValidationException("A category with the same name already exists: " + requestUpdateCategory.name());
+        }
         return categoryRepository.findById(id).map(category -> {
             category.setName(requestUpdateCategory.name());
             if(requestUpdateCategory.image() != null && !requestUpdateCategory.image().isEmpty()) {
@@ -79,17 +86,14 @@ public class CategoryServiceImpl implements CategoryService{
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
-        // Busca todos os produtos que têm esta categoria
         List<Product> products = productRepository.findByCategoriesContaining(category);
 
-        // Remove a categoria de cada produto
         for (Product product : products) {
             product.getCategories().remove(category);
             productRepository.save(product);
         }
         imageService.deleteImageFromServer(category.getImageUrl());
 
-        // Agora pode deletar a categoria com segurança
         categoryRepository.delete(category);
     }
 }

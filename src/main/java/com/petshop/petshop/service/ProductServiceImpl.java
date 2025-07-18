@@ -19,16 +19,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class productServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService{
+
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ImageService imageService;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private ImageService imageService;
+    public ProductServiceImpl(ProductRepository productRepository,
+                              CategoryRepository categoryRepository,
+                              ImageService imageService) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.imageService = imageService;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -66,6 +70,7 @@ public class productServiceImpl implements ProductService{
                 newProduct.setCategories(managedCategories);
             }
         }
+        
         String imageUrl = imageService.saveImageToServer(requestNewProduct.getImage());
         newProduct.setImageUrl(imageUrl);
 
@@ -99,11 +104,10 @@ public class productServiceImpl implements ProductService{
     @Override
     @Transactional
     public void deleteProduct(String id) {
-        Optional<Product> product = productRepository.findById(id);
-        if (product.isPresent()) {
-            imageService.deleteImageFromServer(product.get().getImageUrl());
-            productRepository.deleteById(id);
-        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        imageService.deleteImageFromServer(product.getImageUrl());
+        productRepository.deleteById(id);
     }
 
 }
