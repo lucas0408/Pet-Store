@@ -1,4 +1,4 @@
-package com.petshop.petshop;
+package com.petshop.petshop.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.petshop.model.User;

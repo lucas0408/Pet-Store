@@ -1,9 +1,7 @@
-package com.petshop.petshop;
+package com.petshop.petshop.unit;
 
 import com.petshop.petshop.DTO.*;
 import com.petshop.petshop.exception.ResourceNotFoundException;
-import com.petshop.petshop.model.Category;
-import com.petshop.petshop.model.Product;
 import com.petshop.petshop.model.User;
 import com.petshop.petshop.repository.UserRepository;
 import com.petshop.petshop.service.UsererviceImpl;
@@ -16,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

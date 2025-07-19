@@ -1,4 +1,4 @@
-package com.petshop.petshop;
+package com.petshop.petshop.unit;
 
 import com.petshop.petshop.DTO.ProductDTO;
 import com.petshop.petshop.DTO.ProductResponseDTO;

@@ -1,9 +1,7 @@
-package com.petshop.petshop;
+package com.petshop.petshop.unit;
 
 import com.petshop.petshop.DTO.CategoryDTO;
 import com.petshop.petshop.DTO.CategoryResponseDTO;
-import com.petshop.petshop.DTO.ProductDTO;
-import com.petshop.petshop.DTO.ProductResponseDTO;
 import com.petshop.petshop.exception.ResourceNotFoundException;
 import com.petshop.petshop.model.Category;
 import com.petshop.petshop.model.Product;
