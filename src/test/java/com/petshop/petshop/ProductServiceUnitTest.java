@@ -157,7 +157,6 @@ public class ProductServiceUnitTest {
         product.setCategories(Collections.emptySet());
         updateProductDTO.setCategories(Collections.emptySet());
 
-        given(productRepository.existsByName(updateProductDTO.getName())).willReturn(false);
         given(productRepository.findById(product.getId())).willReturn(Optional.of(product));
         given(productRepository.save(any(Product.class))).willReturn(product);
 
@@ -174,7 +173,6 @@ public class ProductServiceUnitTest {
 
         Product product = createProduct();
 
-        given(productRepository.existsByName(updateProductDTO.getName())).willReturn(false);
         given(productRepository.findById(product.getId())).willReturn(Optional.of(product));
         given(productRepository.save(any(Product.class))).willReturn(product);
 
@@ -191,7 +189,6 @@ public class ProductServiceUnitTest {
 
         Product product = createProduct();
 
-        given(productRepository.existsByName(updateProductDTO.getName())).willReturn(false);
         given(productRepository.findById(product.getId())).willReturn(Optional.empty());
 
         assertThrows(
