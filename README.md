@@ -34,6 +34,44 @@ Pet Store é uma aplicação web full stack desenvolvida para facilitar o cadast
 - Front end web: Vercel
 - Banco de dados: Postgresql
 
+## Testes
+
+O projeto possui testes automatizados para garantir a qualidade e confiabilidade do código.
+
+### Back-end
+- **Testes unitários**: Testam as regras de negócio e lógica das classes de serviço utilizando mocks
+- **Testes de integração**: Validam os endpoints da API e a integração entre as camadas usando MockMvc
+
+#### Executar os testes
+
+```bash
+# Executar todos os testes
+./mvnw test
+
+# Executar apenas testes unitários
+./mvnw test -Dtest="**/unit/**/*"
+
+# Executar apenas testes de integração
+./mvnw test -Dtest="**/integration/**/*"
+
+# Executar teste específico
+./mvnw test -Dtest="CategoryServiceUnitTest"
+```
+
+#### Principais cenários testados
+- Cadastro e validação de produtos
+- Gerenciamento de funcionários
+- Validação de dados de entrada
+- Tratamento de exceções e respostas HTTP
+- Endpoints da API REST
+
+#### Ferramentas utilizadas
+- **JUnit 5**: Framework de testes unitários e de integração
+- **Mockito**: Mock de dependências e simulação de comportamentos
+- **MockMvc**: Testes de integração dos controllers e endpoints da API
+- **Spring Boot Test**: Configuração do contexto de testes
+
+
 # Como executar o projeto
 
 ## Back end
