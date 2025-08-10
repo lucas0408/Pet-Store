@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'URL_DO_SEU_REPOSITORIO_GIT'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("petshop-prod:latest", ".")
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Para evitar conflito de containers antigos, você pode parar e remover antes
+                    sh "docker stop petshop-prod || true"
+                    sh "docker rm petshop-prod || true"
+                    sh "docker run -d -p 8080:8080 --name petshop-prod petshop-prod:latest"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finalizado.'
+        }
+    }
+}
