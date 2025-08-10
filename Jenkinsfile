@@ -1,13 +1,7 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Checkout') {
-            steps {
-                git 'URL_DO_SEU_REPOSITORIO_GIT'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
@@ -15,7 +9,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Run Docker Container') {
             steps {
                 script {
@@ -27,7 +21,7 @@ pipeline {
             }
         }
     }
-
+    
     post {
         always {
             echo 'Pipeline finalizado.'
