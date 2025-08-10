@@ -16,7 +16,7 @@ pipeline {
                     // Para evitar conflito de containers antigos, você pode parar e remover antes
                     sh "docker stop petshop-prod || true"
                     sh "docker rm petshop-prod || true"
-                    sh "docker run -d -p 8080:8080 --name petshop-prod petshop-prod:latest"
+                    sh "docker run -d -p 8090:8080 --name petshop-prod petshop-prod:latest"
                 }
             }
         }
